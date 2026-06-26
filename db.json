@@ -1,0 +1,100 @@
+{
+  "users": [
+    {
+      "id": "user-admin",
+      "email": "admin@enterprise.com",
+      "name": "Sarah Connor",
+      "role": "Admin",
+      "passwordHash": "$2b$10$WtI9YbI.KigtKoDfLzLBaOxNvGcXaCWc/20MJf2d9z1i0SIwVeOvy",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
+    },
+    {
+      "id": "user-manager",
+      "email": "manager@enterprise.com",
+      "name": "John Miller",
+      "role": "Project Manager",
+      "passwordHash": "$2b$10$WtI9YbI.KigtKoDfLzLBaO8eY5KCyjalVTwkw5xq.GDdCPYttzKva",
+      "avatarUrl": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150"
+    },
+    {
+      "id": "user-member1",
+      "email": "member1@enterprise.com",
+      "name": "Alex Rivera",
+      "role": "Team Member",
+      "passwordHash": "$2b$10$WtI9YbI.KigtKoDfLzLBaON34y8tPAw7S1At3vTKsj8qHnZw2sHsu",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+    },
+    {
+      "id": "user-member2",
+      "email": "member2@enterprise.com",
+      "name": "Emily Chen",
+      "role": "Team Member",
+      "passwordHash": "$2b$10$WtI9YbI.KigtKoDfLzLBaON34y8tPAw7S1At3vTKsj8qHnZw2sHsu",
+      "avatarUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150"
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-alpha",
+      "name": "Project Alpha (Core API Platform)",
+      "description": "Design and build the secure core enterprise APIs with high availability.",
+      "managerId": "user-manager"
+    },
+    {
+      "id": "proj-beta",
+      "name": "Project Beta (NextGen Dashboard)",
+      "description": "Develop the user interface dashboard featuring modern visual state charts.",
+      "managerId": "user-manager"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-1",
+      "title": "Design JWT authentication architecture",
+      "description": "Create security middleware to validate JWTs and authorize based on User roles (Admin, PM, Member).",
+      "status": "In Progress",
+      "priority": "High",
+      "dueDate": "2026-07-10",
+      "assigneeId": "user-member1",
+      "projectId": "proj-alpha",
+      "createdAt": "2026-06-20T00:00:00.000Z",
+      "updatedAt": "2026-06-25T00:00:00.000Z"
+    },
+    {
+      "id": "task-2",
+      "title": "Implement CORS and Rate Limiting",
+      "description": "Set up Express middleware to limit api abuse and configure secure cross-origin resource sharing.",
+      "status": "Todo",
+      "priority": "Medium",
+      "dueDate": "2026-07-15",
+      "assigneeId": "user-member2",
+      "projectId": "proj-alpha",
+      "createdAt": "2026-06-22T00:00:00.000Z",
+      "updatedAt": "2026-06-22T00:00:00.000Z"
+    },
+    {
+      "id": "task-3",
+      "title": "Create Figma dashboard layouts",
+      "description": "Design comprehensive UX templates matching modern slate and negative-space styles.",
+      "status": "Done",
+      "priority": "Low",
+      "dueDate": "2026-06-24",
+      "assigneeId": "user-member2",
+      "projectId": "proj-beta",
+      "createdAt": "2026-06-18T00:00:00.000Z",
+      "updatedAt": "2026-06-24T00:00:00.000Z"
+    },
+    {
+      "id": "task-4",
+      "title": "Conduct end-to-end audit",
+      "description": "Audit the RESTful endpoints for RBAC consistency and resource containment checks.",
+      "status": "Review",
+      "priority": "High",
+      "dueDate": "2026-07-01",
+      "assigneeId": "user-member1",
+      "projectId": "proj-alpha",
+      "createdAt": "2026-06-24T00:00:00.000Z",
+      "updatedAt": "2026-06-25T00:00:00.000Z"
+    }
+  ]
+}

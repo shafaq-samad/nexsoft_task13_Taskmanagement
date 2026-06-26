@@ -1,0 +1,6 @@
+{
+  "name": "Enterprise Task Management System",
+  "description": "A secure, modular full-stack project and task management system featuring role-based access control (RBAC), collaborative project workspaces, and a live state-machine task dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
