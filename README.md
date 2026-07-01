@@ -1,16 +1,92 @@
-# Enterprise Task Management System
+# TaskBoard Workspace
 
-A full-stack task management application with role-based access control and modern UI.
+TaskBoard Workspace is a full-stack Kanban application built with React, TypeScript, Vite, and Express. It demonstrates role-based access control, authenticated task workflows, project management, and a polished UI designed to read like a real product instead of a tutorial demo.
 
-This contains everything you need to run the app locally.
+## Live Demo
 
-## Run Locally
+Add your deployed URL here once the app is hosted.
 
-**Prerequisites:**  Node.js
+## Screenshots
 
+Add 2 to 4 screenshots here after deployment.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Tech Stack
+
+- React 19
+- TypeScript
+- Vite
+- Express
+- JSON file persistence for local/demo data
+- Lucide icons
+- Motion for UI transitions
+- React Router for routing and 404 handling
+
+## What It Does
+
+- Authenticates users with JWT sessions
+- Enforces server-side role-based permissions for Admin, Project Manager, and Team Member roles
+- Creates, edits, filters, and deletes tasks inside a Kanban workflow
+- Supports project-level organization and board filtering
+- Persists state in a local JSON database for demo portability
+- Includes a production-style auth screen, workspace shell, and accessible modals
+
+## Architecture
+
+- Client: React app composed from hooks, contexts, and feature components
+- Server: Express API with route modules for auth, users, projects, and tasks
+- Storage: `db.json` file-backed persistence for local development and review builds
+- Routing: React Router handles the home route and 404 fallback
+
+## Local Setup
+
+### Prerequisites
+
+- Node.js 20 or newer
+
+### Install
+
+```bash
+npm install
+```
+
+### Environment
+
+Copy [.env.example](.env.example) to `.env` and set:
+
+- `JWT_SECRET` to a strong random value
+- `PORT` if you want to override the default
+
+### Run Development Server
+
+```bash
+npm run dev
+```
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+### Typecheck
+
+```bash
+npm run lint
+```
+
+## Deployment
+
+The recommended production guide is in [DEPLOYMENT.md](DEPLOYMENT.md). It covers Railway, Render, and Docker/Fly.io setups.
+
+## Feature Highlights
+
+- Role-aware task and project management
+- Authenticated workspace sessions
+- Accessible modal dialogs
+- Motion-based UI polish
+- Local avatar assets and optimized static metadata
+- Error boundary and 404 route
+
+## Notes
+
+This project is intentionally demo-friendly, but the structure is close to what you would use for a real internal product dashboard.

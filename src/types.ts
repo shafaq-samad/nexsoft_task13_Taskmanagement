@@ -1,5 +1,47 @@
 export type UserRole = 'Admin' | 'Project Manager' | 'Team Member';
 
+export interface AuthTokenPayload {
+  userId: string;
+  role: UserRole;
+  iat?: number;
+  exp?: number;
+}
+
+export interface ApiErrorResponse {
+  error: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest extends LoginRequest {
+  name: string;
+  role?: UserRole;
+  avatarUrl?: string;
+}
+
+export interface ProjectCreateRequest {
+  name: string;
+  description?: string;
+}
+
+export interface TaskMutationRequest {
+  title?: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  dueDate?: string;
+  assigneeId?: string | null;
+  projectId?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -29,9 +71,4 @@ export interface Project {
   name: string;
   description: string;
   managerId: string | null;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: User;
 }

@@ -1,6 +1,7 @@
 import React from 'react';
-import { LogOut, LayoutGrid, ShieldCheck, User, Users2 } from 'lucide-react';
+import { LogOut, Moon, ShieldCheck, SunMedium, User, Users2 } from 'lucide-react';
 import { User as AppUser } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface NavbarProps {
   currentUser: AppUser | null;
@@ -8,6 +9,8 @@ interface NavbarProps {
 }
 
 export default function Navbar({ currentUser, onLogout }: NavbarProps) {
+  const { theme, toggleTheme } = useTheme();
+
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'Admin':
@@ -57,6 +60,17 @@ export default function Navbar({ currentUser, onLogout }: NavbarProps) {
       {/* User profile & controls */}
       {currentUser && (
         <div className="flex items-center gap-6">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="text-slate-500 hover:text-slate-800 rounded-lg p-2 hover:bg-slate-50 transition-colors flex items-center gap-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            title="Toggle theme"
+          >
+            {theme === 'light' ? <Moon className="w-4 h-4 text-slate-400" /> : <SunMedium className="w-4 h-4 text-slate-400" />}
+            <span className="hidden sm:inline">{theme === 'light' ? 'Dark' : 'Light'}</span>
+          </button>
+
           {/* User Meta */}
           <div className="flex items-center gap-3 pr-5 border-r border-slate-200 h-10">
             <div className="text-right hidden sm:block">
@@ -69,6 +83,8 @@ export default function Navbar({ currentUser, onLogout }: NavbarProps) {
                 src={currentUser.avatarUrl}
                 alt={currentUser.name}
                 referrerPolicy="no-referrer"
+                loading="lazy"
+                decoding="async"
                 className="w-10 h-10 rounded-full object-cover border-2 border-slate-100 shadow-xs"
               />
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-indigo-500 border-2 border-white" />

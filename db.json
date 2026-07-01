@@ -6,7 +6,7 @@
       "name": "Sarah Connor",
       "role": "Admin",
       "passwordHash": "$2b$10$WtI9YbI.KigtKoDfLzLBaOxNvGcXaCWc/20MJf2d9z1i0SIwVeOvy",
-      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
+      "avatarUrl": "/avatars/admin.svg"
     },
     {
       "id": "user-manager",
@@ -14,7 +14,7 @@
       "name": "John Miller",
       "role": "Project Manager",
       "passwordHash": "$2b$10$WtI9YbI.KigtKoDfLzLBaO8eY5KCyjalVTwkw5xq.GDdCPYttzKva",
-      "avatarUrl": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150"
+      "avatarUrl": "/avatars/manager.svg"
     },
     {
       "id": "user-member1",
@@ -22,7 +22,7 @@
       "name": "Alex Rivera",
       "role": "Team Member",
       "passwordHash": "$2b$10$WtI9YbI.KigtKoDfLzLBaON34y8tPAw7S1At3vTKsj8qHnZw2sHsu",
-      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+      "avatarUrl": "/avatars/member-1.svg"
     },
     {
       "id": "user-member2",
@@ -30,7 +30,15 @@
       "name": "Emily Chen",
       "role": "Team Member",
       "passwordHash": "$2b$10$WtI9YbI.KigtKoDfLzLBaON34y8tPAw7S1At3vTKsj8qHnZw2sHsu",
-      "avatarUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150"
+      "avatarUrl": "/avatars/member-2.svg"
+    },
+    {
+      "id": "user-1782936800917",
+      "email": "shafaqsamad111@gmail.com",
+      "name": "John",
+      "role": "Team Member",
+      "avatarUrl": "/avatars/member-1.svg",
+      "passwordHash": "$2b$10$i7KMvG7.2rieQhFVTDdsTu2SdNKSU75uZRy3vHB1Q95juIAseR3Zq"
     }
   ],
   "projects": [
@@ -45,6 +53,12 @@
       "name": "Project Beta (NextGen Dashboard)",
       "description": "Develop the user interface dashboard featuring modern visual state charts.",
       "managerId": "user-manager"
+    },
+    {
+      "id": "proj-1782937281269",
+      "name": "Client Onboarding Portal",
+      "description": "Make PRD for it.",
+      "managerId": "user-admin"
     }
   ],
   "tasks": [
@@ -95,6 +109,18 @@
       "projectId": "proj-alpha",
       "createdAt": "2026-06-24T00:00:00.000Z",
       "updatedAt": "2026-06-25T00:00:00.000Z"
+    },
+    {
+      "id": "task-1782935070609",
+      "title": "E2E task",
+      "description": "End to end coverage",
+      "status": "Todo",
+      "priority": "Medium",
+      "dueDate": "2026-07-08",
+      "assigneeId": null,
+      "projectId": "proj-alpha",
+      "createdAt": "2026-07-01T19:44:30.609Z",
+      "updatedAt": "2026-07-01T19:44:30.609Z"
     }
   ]
 }

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useId, useMemo, useRef, useState, useEffect } from 'react';
 import { X, Calendar, User, AlignLeft, ShieldAlert, Trash2, CheckCircle2 } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Task, Project, User as AppUser, TaskStatus, TaskPriority } from '../types';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -26,6 +28,9 @@ export default function TaskModal({
   onDelete
 }: TaskModalProps) {
   const isEditing = !!task;
+  const modalRef = useRef<HTMLDivElement>(null);
+  const modalTitleId = useId();
+  const prefersReducedMotion = useReducedMotion();
   
   // Basic Form States
   const [title, setTitle] = useState('');
@@ -49,6 +54,9 @@ export default function TaskModal({
   const isAssignedToMe = isEditing && task?.assigneeId === currentUser.id;
   const canEditStatus = isAdmin || isManager || (isTeamMember && isAssignedToMe);
   const canEditOtherFields = isAdmin || isManager || !isEditing;
+  const usersById = useMemo(() => new Map(users.map((user) => [user.id, user] as const)), [users]);
+
+  useFocusTrap(modalRef, isOpen);
 
   useEffect(() => {
     if (task) {
@@ -70,8 +78,6 @@ export default function TaskModal({
     }
     setError('');
   }, [task, isOpen, currentProjectId, projects]);
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,8 +107,8 @@ export default function TaskModal({
 
       await onSave(taskData);
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.error || err.message || 'Failed to save task');
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'Failed to save task');
     } finally {
       setLoading(false);
     }
@@ -115,8 +121,8 @@ export default function TaskModal({
         setLoading(true);
         await onDelete(task.id);
         onClose();
-      } catch (err: any) {
-        setError(err.message || 'Failed to delete task');
+      } catch (error: unknown) {
+        setError(error instanceof Error ? error.message : 'Failed to delete task');
       } finally {
         setLoading(false);
       }
@@ -124,27 +130,47 @@ export default function TaskModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-      <div id="task-modal" className="bg-white rounded-xl shadow-xl w-full max-w-lg border border-slate-200 overflow-hidden transform transition-all">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider">
-            {isEditing ? 'Task details & actions' : 'Create task'}
-          </h3>
-          <button 
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 rounded p-1 hover:bg-slate-100 transition-colors"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4"
+          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1 }}
+          exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0 }}
+          transition={{ duration: 0.18 }}
+        >
+          <motion.div
+            ref={modalRef}
+            id="task-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={modalTitleId}
+            tabIndex={-1}
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 12, scale: 0.98 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white rounded-xl shadow-xl w-full max-w-lg border border-slate-200 overflow-hidden transform transition-all focus:outline-none"
           >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 id={modalTitleId} className="font-bold text-slate-900 text-sm uppercase tracking-wider">
+                {isEditing ? 'Task details & actions' : 'Create task'}
+              </h3>
+              <button 
+                onClick={onClose}
+                className="text-slate-400 hover:text-slate-600 rounded p-1 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
         {/* Info banners about permissions */}
         {isEditing && isTeamMember && !isAssignedToMe && (
           <div className="bg-rose-50 text-rose-800 text-[11px] px-6 py-3 border-b border-rose-100 flex items-start gap-2">
             <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <span>
-              <strong>ReadOnly view:</strong> This task is assigned to <strong>{users.find(u => u.id === task.assigneeId)?.name || 'Unassigned'}</strong>. You can only modify tasks assigned to you.
+              <strong>ReadOnly view:</strong> This task is assigned to <strong>{task?.assigneeId ? usersById.get(task.assigneeId)?.name || 'Unassigned' : 'Unassigned'}</strong>. You can only modify tasks assigned to you.
             </span>
           </div>
         )}
@@ -160,17 +186,19 @@ export default function TaskModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
           {error && (
-            <div className="bg-rose-50 text-rose-800 text-xs p-3 rounded-lg border border-rose-100">
+            <div role="alert" className="bg-rose-50 text-rose-800 text-xs p-3 rounded-lg border border-rose-100">
               {error}
             </div>
           )}
 
           {/* Title */}
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+            <label htmlFor="task-title-input" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
               Task Title
             </label>
             <input
+              id="task-title-input"
+              data-autofocus="true"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -182,7 +210,7 @@ export default function TaskModal({
 
           {/* Description */}
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+            <label htmlFor="task-description-input" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
               Description
             </label>
             <div className="relative">
@@ -190,6 +218,7 @@ export default function TaskModal({
                 <AlignLeft className="w-4 h-4" />
               </span>
               <textarea
+                id="task-description-input"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={!canEditOtherFields}
@@ -203,25 +232,26 @@ export default function TaskModal({
           {/* Project & Assignee */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label htmlFor="task-project-select" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                 Workspace Project
               </label>
               <select
+                id="task-project-select"
                 value={projectId}
                 onChange={(e) => setProjectId(e.target.value)}
                 disabled={!canEditOtherFields}
                 className="w-full text-sm border border-slate-200 rounded px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 bg-white disabled:bg-slate-50 disabled:text-slate-400 font-medium"
               >
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
+                {projects.map((projectOption) => (
+                  <option key={projectOption.id} value={projectOption.id}>
+                    {projectOption.name}
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label htmlFor="task-assignee-select" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                 Assignee
               </label>
               <div className="relative">
@@ -229,15 +259,16 @@ export default function TaskModal({
                   <User className="w-4 h-4" />
                 </span>
                 <select
+                  id="task-assignee-select"
                   value={assigneeId}
                   onChange={(e) => setAssigneeId(e.target.value)}
                   disabled={!canEditOtherFields}
                   className="w-full text-sm border border-slate-200 rounded pl-9 pr-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 bg-white disabled:bg-slate-50 disabled:text-slate-400 font-medium"
                 >
                   <option value="">Unassigned</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name} ({u.role})
+                    {users.map((userOption) => (
+                      <option key={userOption.id} value={userOption.id}>
+                        {userOption.name} ({userOption.role})
                     </option>
                   ))}
                 </select>
@@ -248,10 +279,11 @@ export default function TaskModal({
           {/* Status & Priority & Due Date */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label htmlFor="task-status-select" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                 Status State
               </label>
               <select
+                id="task-status-select"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as TaskStatus)}
                 disabled={!canEditStatus}
@@ -265,10 +297,11 @@ export default function TaskModal({
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label htmlFor="task-priority-select" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                 Priority
               </label>
               <select
+                id="task-priority-select"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as TaskPriority)}
                 disabled={!canEditOtherFields}
@@ -281,7 +314,7 @@ export default function TaskModal({
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label htmlFor="task-due-date-input" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                 Due Date
               </label>
               <div className="relative">
@@ -289,6 +322,7 @@ export default function TaskModal({
                   <Calendar className="w-4 h-4" />
                 </span>
                 <input
+                  id="task-due-date-input"
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
@@ -320,7 +354,7 @@ export default function TaskModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 rounded border border-transparent hover:border-slate-200 transition-colors"
+                className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 rounded border border-transparent hover:border-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               >
                 Cancel
               </button>
@@ -329,16 +363,18 @@ export default function TaskModal({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 rounded shadow-xs transition-colors"
+                  className="px-5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 rounded shadow-xs transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 >
                   {loading ? 'Saving...' : 'Save'}
                 </button>
               )}
             </div>
           </div>
-        </form>
-      </div>
-    </div>
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

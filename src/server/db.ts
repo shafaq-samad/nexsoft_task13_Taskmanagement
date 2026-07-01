@@ -22,7 +22,7 @@ const getInitialData = (): DatabaseSchema => {
         name: 'Sarah Connor',
         role: 'Admin',
         passwordHash: bcrypt.hashSync('admin123', salt),
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
+        avatarUrl: '/avatars/admin.svg'
       },
       {
         id: 'user-manager',
@@ -30,7 +30,7 @@ const getInitialData = (): DatabaseSchema => {
         name: 'John Miller',
         role: 'Project Manager',
         passwordHash: bcrypt.hashSync('manager123', salt),
-        avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'
+        avatarUrl: '/avatars/manager.svg'
       },
       {
         id: 'user-member1',
@@ -38,7 +38,7 @@ const getInitialData = (): DatabaseSchema => {
         name: 'Alex Rivera',
         role: 'Team Member',
         passwordHash: bcrypt.hashSync('member123', salt),
-        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'
+        avatarUrl: '/avatars/member-1.svg'
       },
       {
         id: 'user-member2',
@@ -46,7 +46,7 @@ const getInitialData = (): DatabaseSchema => {
         name: 'Emily Chen',
         role: 'Team Member',
         passwordHash: bcrypt.hashSync('member123', salt),
-        avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150'
+        avatarUrl: '/avatars/member-2.svg'
       }
     ],
     projects: [

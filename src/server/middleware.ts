@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { db } from './db';
-import { UserRole, User } from '../types';
+import { AuthTokenPayload, UserRole, User } from '../types';
 
 export const JWT_SECRET = process.env.JWT_SECRET || 'enterprise-super-secret-key-2026';
 
@@ -21,20 +21,19 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
     return;
   }
 
-  jwt.verify(token, JWT_SECRET, (err, decoded: any) => {
-    if (err) {
-      res.status(403).json({ error: 'Invalid or expired access token.' });
-      return;
-    }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
 
-    if (!decoded || !decoded.userId) {
+    if (typeof decoded === 'string' || !decoded || !(decoded as AuthTokenPayload).userId) {
       res.status(403).json({ error: 'Malformed token payload.' });
       return;
     }
 
+    const payload = decoded as AuthTokenPayload;
+
     // Lookup user in DB to verify they still exist and retrieve latest role
     const users = db.getUsers();
-    const user = users.find(u => u.id === decoded.userId);
+    const user = users.find((candidate) => candidate.id === payload.userId);
 
     if (!user) {
       res.status(404).json({ error: 'Authenticated user no longer exists.' });
@@ -45,7 +44,9 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
     const { passwordHash, ...safeUser } = user;
     (req as AuthenticatedRequest).user = safeUser;
     next();
-  });
+  } catch {
+    res.status(403).json({ error: 'Invalid or expired access token.' });
+  }
 }
 
 /**
