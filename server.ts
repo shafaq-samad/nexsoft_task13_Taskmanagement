@@ -22,11 +22,6 @@ async function startServer() {
   app.use('/api/projects', projectRoutes);
   app.use('/api/tasks', taskRoutes);
 
-  // Simple health endpoint to verify backend is up when deployed separately
-  app.get('/api/health', (_req, res) => {
-    res.json({ ok: true, routes: ['/api/auth', '/api/users', '/api/projects', '/api/tasks'] });
-  });
-
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
