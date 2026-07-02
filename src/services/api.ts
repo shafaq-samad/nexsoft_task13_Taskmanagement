@@ -12,6 +12,9 @@ import {
 
 const TOKEN_STORAGE_KEY = 'ent_jwt_token';
 
+// Read API base URL from Vite env. Leave empty to use relative paths.
+const API_BASE = (typeof import.meta !== 'undefined' ? (import.meta as any).env?.VITE_API_BASE_URL : '') || '';
+
 export class ApiError extends Error {
   status: number;
 
@@ -79,7 +82,9 @@ async function readResponse<T>(response: Response): Promise<T> {
 }
 
 async function request<T>(path: string, init: RequestInit = {}, includeAuth = true): Promise<T> {
-  const response = await fetch(path, {
+  const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
+
+  const response = await fetch(url, {
     ...init,
     headers: buildHeaders(init.headers, includeAuth),
   });
@@ -156,3 +161,6 @@ export const api = {
 };
 
 export const apiRequest = request;
+
+// Base URL for API requests. Set `VITE_API_BASE_URL` in your Vite/hosting env
+// (e.g. https://your-backend.example.com) when frontend and backend are deployed separately.
