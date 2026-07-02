@@ -299,11 +299,6 @@ function AuthShell({
             </div>
           </div>
 
-          <div className="bg-slate-100 border border-slate-200 p-4 rounded-xl text-center">
-            <span className="text-[10px] font-semibold text-slate-500 block leading-relaxed">
-              Local JSON persistence keeps the demo self-contained for development and portfolio review.
-            </span>
-          </div>
         </aside>
       </div>
     </main>
