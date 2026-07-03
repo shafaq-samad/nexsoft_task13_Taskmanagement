@@ -14,7 +14,16 @@ const TOKEN_STORAGE_KEY = 'ent_jwt_token';
 const DEFAULT_PROD_API_BASE_URL = 'https://nexsoft-task13-taskmanagement.onrender.com';
 
 const getApiBaseUrl = () => {
-  const configuredBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
+  const configuredBaseUrl = [
+    import.meta.env.VITE_API_URL,
+    import.meta.env.VITE_API_BASE_URL,
+    import.meta.env['VITE-API-URL'],
+    import.meta.env['VITE-API-BASE-URL'],
+  ]
+    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+    .map((value) => value.trim())
+    .at(0);
+
   if (configuredBaseUrl) {
     return configuredBaseUrl.replace(/\/$/, '');
   }
