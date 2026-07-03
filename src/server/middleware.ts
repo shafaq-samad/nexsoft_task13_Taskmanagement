@@ -4,7 +4,6 @@ import { db } from './db';
 import { AuthTokenPayload, UserRole, User } from '../types';
 
 const DEFAULT_ALLOWED_ORIGINS = [
-  'https://task-management-theta-six.vercel.app',
   'http://localhost:3000',
   'http://localhost:5173',
 ];
@@ -14,11 +13,21 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || DEFAULT_ALLOWED_ORIGINS.
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const VERCEL_ORIGIN_REGEX = /^https:\/\/[\w.-]+\.vercel\.app$/i;
+
+function isAllowedOrigin(origin: string | undefined) {
+  if (!origin) {
+    return false;
+  }
+
+  return ALLOWED_ORIGINS.includes(origin) || VERCEL_ORIGIN_REGEX.test(origin);
+}
+
 export function corsMiddleware(req: Request, res: Response, next: NextFunction) {
   const origin = req.headers.origin;
-  const isAllowedOrigin = typeof origin === 'string' && ALLOWED_ORIGINS.includes(origin);
+  const isAllowed = isAllowedOrigin(origin);
 
-  if (isAllowedOrigin) {
+  if (isAllowed) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Vary', 'Origin');

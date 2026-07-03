@@ -11,6 +11,31 @@ import {
 } from '../types';
 
 const TOKEN_STORAGE_KEY = 'ent_jwt_token';
+const DEFAULT_PROD_API_BASE_URL = 'https://nexsoft-task13-taskmanagement.onrender.com';
+
+const getApiBaseUrl = () => {
+  const configuredBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
+  if (configuredBaseUrl) {
+    return configuredBaseUrl.replace(/\/$/, '');
+  }
+
+  if (import.meta.env.PROD) {
+    return DEFAULT_PROD_API_BASE_URL;
+  }
+
+  return '';
+};
+
+const buildApiUrl = (path: string) => {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const apiBaseUrl = getApiBaseUrl();
+
+  if (!apiBaseUrl) {
+    return normalizedPath;
+  }
+
+  return `${apiBaseUrl}${normalizedPath}`;
+};
 
 export class ApiError extends Error {
   status: number;
@@ -79,7 +104,7 @@ async function readResponse<T>(response: Response): Promise<T> {
 }
 
 async function request<T>(path: string, init: RequestInit = {}, includeAuth = true): Promise<T> {
-  const response = await fetch(path, {
+  const response = await fetch(buildApiUrl(path), {
     ...init,
     headers: buildHeaders(init.headers, includeAuth),
   });
