@@ -5,12 +5,14 @@ import authRoutes from './src/server/routes/auth';
 import projectRoutes from './src/server/routes/projects';
 import taskRoutes from './src/server/routes/tasks';
 import userRoutes from './src/server/routes/users';
+import { corsMiddleware } from './src/server/middleware';
 
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT || 3000);
 
   app.use(express.json());
+  app.use(corsMiddleware);
 
   app.use((req, _res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);

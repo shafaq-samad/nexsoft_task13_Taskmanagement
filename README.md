@@ -78,13 +78,6 @@ npm run lint
 
 The recommended production guide is in [DEPLOYMENT.md](DEPLOYMENT.md). It covers Railway, Render, and Docker/Fly.io setups.
 
-Note for deploying frontend separately (Vercel) and backend elsewhere (Render):
-
-- Set `VITE_API_BASE_URL` in your Vercel project env vars to the full backend URL (for example `https://your-backend.onrender.com`).
-- The frontend uses this value to prefix `/api/*` requests when present; otherwise it will call relative paths.
-
-If you receive a 404 on `/api/auth/login` after deploying the frontend, ensure the backend is running at the URL you set and that `VITE_API_BASE_URL` is configured in Vercel.
-
 ## Feature Highlights
 
 - Role-aware task and project management
